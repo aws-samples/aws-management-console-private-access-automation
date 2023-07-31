@@ -1,4 +1,6 @@
-## console-private-access-automation
+## Automation to deploy AWS Management Console - Private Access with CloudFormation
+
+The goal of this project is to provide customers with automation for deploying Management Console - Private Access using CloudFormation. This is needed because the feature is expected to incrementally add support for more Regions and services, and that will be very manual, cumbersome and error-prone for customers to keep making those additions in their implementations. This automation script will make that process faster, smoother and simpler.
 
 ## Overview
 
@@ -6,7 +8,7 @@ Official documentation - https://docs.aws.amazon.com/awsconsolehelpdocs/latest/g
 
 The Management Console - Private Access feature enables enterprise customers to control which AWS accounts and organizations can be accessed from their corporate networks. This is accomplished by conditionally forwarding DNS queries for aws.amazon.com to a Route 53 Inbound resolver which will resolve those queries to a console VPC Endpoint in the VPC through a Private Hosted Zone, and using the endpoint policy to control the accounts/organizations that can be allowed.
 
-* In short, implementing this feature requires
+Implementing this feature requires
     * VPC Endpoints for console and signin PrivateLink services in each supported and required Region (us-east-1 is a must)
     * Route 53 Inbound Resolver in a VPC
     *  Route 53 Private Hosted Zone for aws.amazon.com associated to the VPC that has the Inbounc Resolver with RecordSets for all the listed records in the documentation
@@ -16,12 +18,12 @@ The Management Console - Private Access feature enables enterprise customers to 
             - This can break access to sub-domains that are not configured in the PHZ, for example docs.aws.amazon.com, health.aws.amazon.com (Refer SIM https://t.corp.amazon.com/P91231640)
 
 
-**Parameters**
+*Parameters**
 1. VPC - Select a VPC from the dropdown for deploying the resources
 2. Subnet 1, Subnet 2 - Select two subnets from the selected VPC for deploying the VPC endpoints and Inbound resolver endpoint
 3. Security Group - Select a security group for the VPC Endpoints and Inbound Resolver - This should allow TCP 443 and UDP 53 from on-premises network
 
-**Resources created:**
+*Resources created:**
 
 |Logical ID|Type|
 |-|-|
@@ -37,10 +39,6 @@ The Management Console - Private Access feature enables enterprise customers to 
 |widgetConsoleRecord|AWS::Route53::RecordSet|
 |nmConsoleRecord|AWS::Route53::RecordSet|
 |supportconsoleRecord|AWS::Route53::RecordSet|
-
-## About this project
-
-The goal of this project is to provide customers with automation for deploying Management Console - Private Access using CloudFormation. This is needed because the feature is expected to incrementally add support for more Regions and services, and that will be very manual, cumbersome and error-prone for customers to keep making those additions in their implementations. This automation script will make that process faster, smoother and simpler.
 
 
 ## How to Test
