@@ -51,14 +51,7 @@ One way to test this is by deploying a client VPN endpoint in us-east-1 with the
 
 - This feature currently is supported only in a handful of Regions and a limited number of services. When using this feature, users will see the un-supported Regions and services greyed out in the console
 
-## To-do
-* This script has to be deployed as a Stack in each Region. That is because you have to provide the VPC and Subnet in each Region for the endpoints and resolver. Explore if this can be deployed as a StackSet. 
-* Add all other service Interface endpoints to the script
 
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
 
