@@ -18,12 +18,12 @@ Implementing this feature requires
             - This can break access to sub-domains that are not configured in the PHZ, for example docs.aws.amazon.com, health.aws.amazon.com (Refer SIM https://t.corp.amazon.com/P91231640)
 
 
-##Parameters
+## Parameters
 1. VPC - Select a VPC from the dropdown for deploying the resources
 2. Subnet 1, Subnet 2 - Select two subnets from the selected VPC for deploying the VPC endpoints and Inbound resolver endpoint
 3. Security Group - Select a security group for the VPC Endpoints and Inbound Resolver - This should allow TCP 443 and UDP 53 from on-premises network
 
-##Resources created:
+## Resources created:
 
 |Logical ID|Type|
 |-|-|
