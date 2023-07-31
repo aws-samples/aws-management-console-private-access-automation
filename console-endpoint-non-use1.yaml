@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Template to deploy Management Console Private Access   
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Select VPC, Subnets and Route 53 Hosted Zone
+        Parameters:
+          - vpcId
+          - subnet1
+          - subnet2
+          - sgForEndpoint
+          - privateHZ
+
+Parameters:
+  vpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Choose a VPC to deploy the console and signin VPC endpoints
+  subnet1:
+    Type: AWS::EC2::Subnet::Id
+    Description: Choose a private subnet in first Availability Zone
+  subnet2:
+    Type: AWS::EC2::Subnet::Id
+    Description: Choose a private subnet in a second Availability Zone
+  sgForEndpoint:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Security Group for the Console and Signin endpoint
+  privateHZ:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Select existing Route 53 Private Hosted Zone for aws.amazon.com
+
+Resources:
+    consoleEndpoint:
+        Type: AWS::EC2::VPCEndpoint
+        Properties: 
+          PrivateDnsEnabled: false
+          ServiceName: !Join ['', ['com.amazonaws.', !Ref AWS::Region, '.console']]
+          SubnetIds: 
+            - !Ref subnet1
+            - !Ref subnet2
+          SecurityGroupIds:
+            - !Ref sgForEndpoint
+          VpcEndpointType: Interface
+          VpcId: !Ref vpcId
+          
+          
+    signinEndpoint:
+        Type: AWS::EC2::VPCEndpoint
+        Properties: 
+          PrivateDnsEnabled: false
+          ServiceName: !Join ['', ['com.amazonaws.', !Ref AWS::Region, '.signin']]
+          SubnetIds: 
+            - !Ref subnet1
+            - !Ref subnet2
+          SecurityGroupIds:
+            - !Ref sgForEndpoint
+          VpcEndpointType: Interface
+          VpcId: !Ref vpcId
+
+    consoleRecord:
+        Type: AWS::Route53::RecordSet
+        Properties:
+          HostedZoneId : !Ref privateHZ
+          AliasTarget:
+            DNSName: !Select ['1', !Split [':', !Select ['0', !GetAtt consoleEndpoint.DnsEntries]]]
+            HostedZoneId: !Select ['0', !Split [':', !Select ['0', !GetAtt consoleEndpoint.DnsEntries]]]
+          Name: !Join ['',[!Ref AWS::Region, '.console.aws.amazon.com']]
+          Type: A
+        DependsOn: [consoleEndpoint]
+        
+        
+    signinRecord:
+        Type: AWS::Route53::RecordSet
+        Properties:
+          HostedZoneId : !Ref privateHZ
+          AliasTarget:
+            DNSName: !Select ['1', !Split [':', !Select ['0', !GetAtt signinEndpoint.DnsEntries]]]
+            HostedZoneId: !Select ['0', !Split [':', !Select ['0', !GetAtt signinEndpoint.DnsEntries]]]
+          Name: !Join ['',[!Ref AWS::Region, '.signin.aws.amazon.com']]
+          Type: A
+        DependsOn: [signinEndpoint]
+
+Outputs:
+  ConsoleVpcEndpointId:
+    Description: Console VPC Endpoint Id
+    Value: !GetAtt consoleEndpoint.Id
+  SigninVpcEndpointId:
+    Description: Signin VPC Endpoint Id
+    Value: !GetAtt signinEndpoint.Id    
+
+  
